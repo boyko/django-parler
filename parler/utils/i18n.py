@@ -101,14 +101,14 @@ def is_multilingual_project(site_id=None):
     return appsettings.PARLER_SHOW_EXCLUDED_LANGUAGE_TABS or site_id in appsettings.PARLER_LANGUAGES
 
 
-def get_null_language_error():
+def try_get_language():
     # Internal util to get the language error
     if get_language() is None:
         # This happens when using parler in management commands.
         # Use translation.activate('en') if you need to have a default locale active.
         return "language_code can't be null, use translation.activate(..) when accessing translated models outside the request/response loop."
     else:
-        return "language_code can't be null"
+        return get_language()
 
 
 def get_language():

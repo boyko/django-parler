@@ -73,7 +73,7 @@ from parler.fields import TranslatedField, LanguageCodeDescriptor, TranslatedFie
 from parler.managers import TranslatableManager
 from parler.utils import compat
 from parler.utils.i18n import (normalize_language_code, get_language, get_language_settings, get_language_title,
-                               get_null_language_error)
+                               try_get_language)
 import sys
 
 try:
@@ -296,7 +296,7 @@ class TranslatableModelMixin(object):
         or :func:`~django.db.models.fields.related.RelatedManager.create` on related fields.
         """
         if language_code is None:
-            raise ValueError(get_null_language_error())
+            language_code = try_get_language()
 
         meta = self._parler_meta
         if self._translations_cache[meta.root_model].get(language_code, None):  # MISSING evaluates to False too
@@ -314,7 +314,7 @@ class TranslatableModelMixin(object):
         :param related_name: If given, only the model matching that related_name is removed.
         """
         if language_code is None:
-            raise ValueError(get_null_language_error())
+            language_code = try_get_language()
 
         if related_name is None:
             metas = self._parler_meta
@@ -392,7 +392,7 @@ class TranslatableModelMixin(object):
         if language_code is None:
             language_code = self._current_language
             if language_code is None:
-                raise ValueError(get_null_language_error())
+                language_code = try_get_language()
 
         meta = self._parler_meta._get_extension_by_related_name(related_name)
 
@@ -463,7 +463,7 @@ class TranslatableModelMixin(object):
         if not language_code:
             language_code = self._current_language
             if language_code is None:
-                raise ValueError(get_null_language_error())
+                language_code = try_get_language()
 
         if meta is None:
             meta = self._parler_meta.root  # work on base model by default
